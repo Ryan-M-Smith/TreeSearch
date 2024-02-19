@@ -1,5 +1,0 @@
-/Users/rmsmith/Projects/MathResearchSeminar/TreeSearch/build/CMakeFiles/SSSearch.dir
-/Users/rmsmith/Projects/MathResearchSeminar/TreeSearch/build/CMakeFiles/package.dir
-/Users/rmsmith/Projects/MathResearchSeminar/TreeSearch/build/CMakeFiles/package_source.dir
-/Users/rmsmith/Projects/MathResearchSeminar/TreeSearch/build/CMakeFiles/edit_cache.dir
-/Users/rmsmith/Projects/MathResearchSeminar/TreeSearch/build/CMakeFiles/rebuild_cache.dir
