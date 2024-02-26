@@ -10,34 +10,55 @@
 extern inline tile_t getTile(board_t board, int tile);
 extern inline board_t* getBoard(void* tree, int parent, int child);
 
-void* __buildTree(void* tree, board_t board, int height, int parent, bool atChild) {
-	const int PARENT_INDEX = (CHILDREN_PER_PARENT + 1) * parent;
+/**
+ * @brief Build
+ * 
+ * @param initialBoard 
+ * @return void* 
+ */
+void* buildTree(board_t initialBoard) {
+	// Create a tree
+	const int BYTES = MAX_BOARD_STATES * SIZEOF_BOARD / 8;
+	void* tree = malloc(BYTES);
 
-	//printf("Parent index: %d\n", PARENT_INDEX);
+	BOARD(tree, 0, 0) = initialBoard; // Store the root node
+	printf("Root: %s\n", getBits(initialBoard, 27));
+	
+	int height = 0; // The starting tree height
+	int parent = 1; // The index of the parent of the first recursively generated row
 
-	if (height > 1) {
-		return tree;
+	__buildTree(tree, initialBoard, height, parent); // Recursively build the tree
+
+	return tree;
+}
+
+/**
+ * @brief Recursively build a tree of board states
+ * 
+ * @param 	tree 	A pointer to the tree memory 	
+ * @param 	board 	The board to generate permutations of
+ * @param 	height 	The current height nodes are being generated at
+ * @param 	parent 	The index of the parent node for the set of nodes being generated
+ * 
+ * @note 			This function acts directly on `tree` rather than returning a result
+ */
+void __buildTree(void* tree, board_t board, int height, int parent) {
+	const int PARENT_INDEX = CHILDREN_PER_PARENT * parent;
+
+	if (height > TREE_GEN_HEIGHT) {
+		return;
 	}
 
-	for (int i = atChild; i < CHILDREN_PER_PARENT + atChild; i++) {
+	for (int i = 1; i <= CHILDREN_PER_PARENT; i++) {
 		printf("Parent: %d Height: %d\n", parent, height);
 
 		// Store the next board permutation.
-		BOARD(tree, PARENT_INDEX, i - atChild) = __permuteBoard(board, i);
+		BOARD(tree, parent, i) = __permuteBoard(board, i);
 
-		printf("%d: %s\n", PARENT_INDEX + i - atChild, getBits(BOARD(tree, PARENT_INDEX, i - atChild), USABLE_BOARD));
-		
-		//
-		// Continue building the tree recursively. Local root nodes cannot be used in recursive calls as
-		// the tree cannot continue to be built until the local root has at least one child, at which point
-		// that child's children (the local root's grandchildren) can be built.
-		//
-		if (i > 0) {
-			//parent += (PARENT_INDEX + i - atChild) % 22 == 0;
-			//height += (PARENT_INDEX + i - atChild) % 22 == 0;
+		printf("%d: %s\n", PARENT_INDEX + i, getBits(BOARD(tree, parent, i), USABLE_BOARD));
 
-			__buildTree(tree, BOARD(tree, PARENT_INDEX, i), height + 1, i, true);
-		}
+		// Continue building the tree recursively
+		__buildTree(tree, BOARD(tree, parent, i), height + 1, i);
 	}
 }
 
@@ -147,19 +168,6 @@ board_t __permuteBoard(board_t board, int perm) {
 	return board;
 }
 
-void* buildTree(board_t initialBoard) {
-	// Data points for recursion and board storage
-	int height = 0, parent = 0;
-	bool atChild = false;
-
-	const int BYTES = MAX_BOARD_STATES * SIZEOF_BOARD / 8;
-	void* tree = malloc(BYTES); // Create a tree
-
-	__buildTree(tree, initialBoard, height, parent, atChild); 
-
-	return tree;
-}
-
 /**
  * @brief Swap two board tiles
  * 
@@ -229,4 +237,20 @@ void flipTile(board_t* board, int tile) {
 	board_t mask = *board & (UINT27_MAX & ~(UINT3_MAX << (24 - BOARD_LEN * tile)));
 
 	*board = mask | ((boardTile + sign) << (24 - BOARD_LEN * tile));
+}
+
+/**
+ * @brief Store the tree's binary data in a file
+ * 
+ * @param 	tree 	The tree to store 
+ */
+void storeTree(const void* tree) {
+	FILE* treefile = fopen("tree.bin", "wb");
+	
+	for (board_t i = 0, board = BOARD_IDX(tree, i); board != 0; board = BOARD_IDX(tree, ++i)) {
+		printf("%d\n", board);
+		fwrite(&board, sizeof(board), 1, treefile);
+	}
+
+	fclose(treefile);
 }

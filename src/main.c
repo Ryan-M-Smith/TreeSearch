@@ -89,6 +89,7 @@ int main() {
 
 	board_t board = generateBoard();
 	void* tree = buildTree(board);
+	storeTree(tree);
 
 	// for (int i = 0; i < 22; i++) {
 	// 	printf("%d: %s\n", i, getBits(BOARD(0, i), 27));

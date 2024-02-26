@@ -16,13 +16,15 @@
 
 #include "decl.h"
 
-void* __buildTree(void* tree, board_t board, int height, int parent, bool atChild);
-board_t __permuteBoard(board_t board, int perm);
-
 void* buildTree(board_t initialBoard);
+
+void __buildTree(void* tree, board_t board, int height, int parent);
+board_t __permuteBoard(board_t board, int perm);
 
 void swapTiles(board_t* board, int tile1, int tile2);
 void flipTile(board_t* board, int tile);
+
+void storeTree(const void* tree);
 
 /**
  * @brief Get a specific board from the tree
