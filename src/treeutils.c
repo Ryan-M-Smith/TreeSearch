@@ -13,19 +13,19 @@ extern inline board_t* getBoard(void* tree, int parent, int child);
 /**
  * @brief Build
  * 
- * @param initialBoard 
- * @return void* 
+ * @param 	initialBoard 	The initial board state
+ * @return 					The fully generated tree for that intitial board state
  */
 void* buildTree(board_t initialBoard) {
 	// Create a tree
-	const int BYTES = MAX_BOARD_STATES * SIZEOF_BOARD / 8;
+	const int BYTES = 4288306 * SIZEOF_BOARD / 8;
 	void* tree = malloc(BYTES);
 
 	BOARD(tree, 0, 0) = initialBoard; // Store the root node
-	printf("Root: %s\n", getBits(initialBoard, 27));
+	//printf("Root: %s\n", getBits(initialBoard, 27));
 	
-	int height = 0; // The starting tree height
-	int parent = 1; // The index of the parent of the first recursively generated row
+	int height = 1; // The starting tree height
+	int parent = 0; // The index of the parent of the first recursively generated row
 
 	__buildTree(tree, initialBoard, height, parent); // Recursively build the tree
 
@@ -43,23 +43,32 @@ void* buildTree(board_t initialBoard) {
  * @note 			This function acts directly on `tree` rather than returning a result
  */
 void __buildTree(void* tree, board_t board, int height, int parent) {
+	static int index = 1; // The root has already been allocated, so we start at 1
+	index++;
+	
 	const int PARENT_INDEX = CHILDREN_PER_PARENT * parent;
-
+	
 	if (height > TREE_GEN_HEIGHT) {
 		return;
 	}
 
+	//parent -= (parent == height);
+
 	for (int i = 1; i <= CHILDREN_PER_PARENT; i++) {
 		printf("Parent: %d Height: %d\n", parent, height);
+		printf("Index: %d\n", index);
+		printf("Allocating: %lu(%d) + %d = %lu\n", CHILDREN_PER_PARENT, parent, i, CHILDREN_PER_PARENT * parent + i);
 
 		// Store the next board permutation.
 		BOARD(tree, parent, i) = __permuteBoard(board, i);
 
-		printf("%d: %s\n", PARENT_INDEX + i, getBits(BOARD(tree, parent, i), USABLE_BOARD));
+		//printf("%d: %s\n", PARENT_INDEX + i, getBits(BOARD(tree, parent, i), USABLE_BOARD));
 
 		// Continue building the tree recursively
-		__buildTree(tree, BOARD(tree, parent, i), height + 1, i);
+		__buildTree(tree, BOARD(tree, parent, i), height + 1, PARENT_INDEX + i);
 	}
+
+	//printf("height: %d\n", height);
 }
 
 /**
@@ -248,7 +257,7 @@ void storeTree(const void* tree) {
 	FILE* treefile = fopen("tree.bin", "wb");
 	
 	for (board_t i = 0, board = BOARD_IDX(tree, i); board != 0; board = BOARD_IDX(tree, ++i)) {
-		printf("%d\n", board);
+		//printf("%s\n", getBits(board, 27));
 		fwrite(&board, sizeof(board), 1, treefile);
 	}
 
