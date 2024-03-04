@@ -98,6 +98,6 @@ typedef uint8_t tile_t;
 /**
  * @brief The maximum height the tree is allowed to generate to
  */
-#define TREE_GEN_HEIGHT 2UL
+#define TREE_GEN_HEIGHT 5UL
 
 #endif // SS_SEARCH_DECL_H
