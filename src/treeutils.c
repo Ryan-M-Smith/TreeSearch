@@ -239,11 +239,11 @@ void swapTiles(board_t* board, int tile1, int tile2) {
  * @param 	tile 	The index of the tile to flip (0 - 8) 
  */
 void flipTile(board_t* board, int tile) {
-	tile_t boardTile = getTile(*board, tile); // The tiler to be flipped
+	tile_t boardTile = getTile(*board, tile); // The tile to be flipped
 	int sign = (boardTile % 2 == 0)? 1 : -1;  // Subtract 1 from odd tiles, add one to even tiles
 
 	// A board mask with the tile to flip zeroed out
-	board_t mask = *board & (UINT27_MAX & ~(UINT3_MAX << (24 - BOARD_LEN * tile)));
+	board_t mask = *board & ~(UINT3_MAX << (24 - BOARD_LEN * tile));
 
 	*board = mask | ((boardTile + sign) << (24 - BOARD_LEN * tile));
 }
