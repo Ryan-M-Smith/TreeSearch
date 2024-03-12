@@ -52,11 +52,11 @@ typedef uint8_t tile_t;
 #define USABLE_TILE 3UL
 
 /**
- * @brief The maximum number of possible board states
+ * @brief The maximum number of possible board states needed to completely fill a height 5 tree
  * 
  * @note  See https://grievous667.github.io/proofs/board-configs for calculations
  */
-#define MAX_BOARD_STATES 2580480UL
+#define MAX_BOARD_STATES 4288306UL
 
 /**
  * @brief The number of rows and columns in the board
