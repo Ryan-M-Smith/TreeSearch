@@ -18,7 +18,7 @@ extern inline board_t* getBoard(void* tree, int parent, int child);
  */
 void* buildTree(board_t initialBoard) {
 	// Create a tree
-	const int BYTES = 4288306 * SIZEOF_BOARD / 8;
+	const int BYTES = MAX_BOARD_STATES * SIZEOF_BOARD / 8;
 	void* tree = malloc(BYTES);
 
 	BOARD(tree, 0, 0) = initialBoard; // Store the root node
