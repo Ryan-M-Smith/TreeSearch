@@ -1,6 +1,6 @@
 //
 // FILENAME: decl.h | Shifting Stones Search
-// DESCRIPTION: 27-bit fixed-wdth integers
+// DESCRIPTION: Global declarations for the C API
 // CREATED: 2024-02-06 @ 9:47 AM
 //
 
@@ -8,6 +8,14 @@
 #define SS_SEARCH_DECL_H
 
 #include <stdint.h>
+
+#if defined(__cplusplus) && defined(__USE_DECL_NAMESPACE)
+namespace decl {
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief A Shifting Stones board
@@ -18,6 +26,11 @@ typedef uint32_t board_t;
  * @brief A board tile
  */
 typedef uint8_t tile_t;
+
+/**
+ * @brief A tree
+ */
+typedef void* tree_t;
 
 /**
  * @brief The number of bits required to store a single board state
@@ -74,6 +87,11 @@ typedef uint8_t tile_t;
 #define POSSIBLE_CONFIGS 21UL
 
 /**
+ * @brief The maximum height the tree is allowed to generate to
+ */
+#define TREE_GEN_HEIGHT 2UL
+
+/**
  * @brief A function macro to get a usable board out of the tree buffer given a parent and child
  * 
  * @param 	__tree 		A pointer to the tree
@@ -95,9 +113,12 @@ typedef uint8_t tile_t;
  */
 #define BOARD_IDX(__tree, __index) *((board_t*)(__tree) + __index)
 
-/**
- * @brief The maximum height the tree is allowed to generate to
- */
-#define TREE_GEN_HEIGHT 5UL
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#if defined(__cplusplus) && defined(__USE_DECL_NAMESPACE)
+} // namespace decl
+#endif
 
 #endif // SS_SEARCH_DECL_H
