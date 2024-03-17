@@ -1,11 +1,11 @@
 //
-// FILENAME: bitutils.h | Shifting Stones Search
-// DESCRIPTION: Utilities for working with board binary data
+// FILENAME: treeutils.h | Shifting Stones Search
+// DESCRIPTION: Utilities for creating and modifying trees
 // CREATED: 2024-02-09 @ 10:38 PM
 //
 
-#ifndef SS_SEARCH_BITUTILS_H
-#define SS_SEARCH_BITUTILS_H
+#ifndef SS_SEARCH_TREEUTILS_H
+#define SS_SEARCH_TREEUTILS_H
 
 #include <assert.h>
 #include <math.h>
@@ -16,9 +16,14 @@
 
 #include "decl.h"
 
-void* buildTree(board_t initialBoard);
+#ifdef __cplusplus
+namespace treeutils {
+extern "C" {
+#endif
 
-void __buildTree(void* tree, board_t board, int height, int parent);
+tree_t buildTree(board_t initialBoard);
+
+void __buildTree(tree_t tree, board_t board, int height, int parent);
 board_t __permuteBoard(board_t board, int perm);
 
 void swapTiles(board_t* board, int tile1, int tile2);
@@ -34,9 +39,9 @@ void storeTree(const void* tree);
  * @param 	child 	The index of the child 
  * @return 			The board 
  */
-inline board_t* getBoard(void* tree, int parent, int child) {
+inline board_t getBoard(tree_t tree, int parent, int child) {
 	assert(tree && parent >= 0 && (child >= 0 && child <= CHILDREN_PER_PARENT));
-	return ((board_t*)(tree) + ((CHILDREN_PER_PARENT + 1) * parent) + child);
+	return *((board_t*)(tree) + CHILDREN_PER_PARENT * parent + child);
 }
 
 /**
@@ -75,4 +80,9 @@ const static char* const getBits(unsigned long value, size_t size) {
 	return buffer;
 }
 
-#endif // SS_SEARCH_BITUTILS_H
+#ifdef __cplusplus
+} // namespace treeutils
+} // extern "C"
+#endif
+
+#endif // SS_SEARCH_TREEUTILS_H

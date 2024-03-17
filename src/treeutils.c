@@ -1,14 +1,20 @@
 //
-// FILENAME: bitutils.c | Shifting Stones Search
-// DESCRIPTION: Utilities for working with board binary data
+// FILENAME: treeutils.c | Shifting Stones Search
+// DESCRIPTION: Utilities for creating and modifying trees
 // CREATED: 2024-02-09 @ 10:38 PM
 //
 
 #include "treeutils.h"
 
-// External definitions for inline functions
-extern inline tile_t getTile(board_t board, int tile);
-extern inline board_t* getBoard(void* tree, int parent, int child);
+#ifdef __cplusplus
+namespace treeutils {
+#endif
+
+#ifndef __cplusplus
+	// External definitions for inline functions
+	extern inline tile_t getTile(board_t board, int tile);
+	extern inline board_t getBoard(tree_t tree, int parent, int child);
+#endif
 
 /**
  * @brief Build
@@ -16,10 +22,10 @@ extern inline board_t* getBoard(void* tree, int parent, int child);
  * @param 	initialBoard 	The initial board state
  * @return 					The fully generated tree for that intitial board state
  */
-void* buildTree(board_t initialBoard) {
+tree_t buildTree(board_t initialBoard) {
 	// Create a tree
 	const int BYTES = MAX_BOARD_STATES * SIZEOF_BOARD / 8;
-	void* tree = malloc(BYTES);
+	tree_t tree = malloc(BYTES);
 
 	BOARD(tree, 0, 0) = initialBoard; // Store the root node
 	//printf("Root: %s\n", getBits(initialBoard, 27));
@@ -42,9 +48,8 @@ void* buildTree(board_t initialBoard) {
  * 
  * @note 			This function acts directly on `tree` rather than returning a result
  */
-void __buildTree(void* tree, board_t board, int height, int parent) {
-	static int index = 1; // The root has already been allocated, so we start at 1
-	index++;
+void __buildTree(tree_t tree, board_t board, int height, int parent) {
+	static int count = 1; // The root has already been allocated, so we start at 1
 	
 	const int PARENT_INDEX = CHILDREN_PER_PARENT * parent;
 	
@@ -55,12 +60,12 @@ void __buildTree(void* tree, board_t board, int height, int parent) {
 	//parent -= (parent == height);
 
 	for (int i = 1; i <= CHILDREN_PER_PARENT; i++) {
-		printf("Parent: %d Height: %d\n", parent, height);
-		printf("Index: %d\n", index);
-		printf("Allocating: %lu(%d) + %d = %lu\n", CHILDREN_PER_PARENT, parent, i, CHILDREN_PER_PARENT * parent + i);
+		//printf("Parent: %d | Height: %d | Count: %d\n", parent, height, count);
+		//printf("Allocating: %lu(%d) + %d = %lu\n", CHILDREN_PER_PARENT, parent, i, CHILDREN_PER_PARENT * parent + i);
 
 		// Store the next board permutation.
 		BOARD(tree, parent, i) = __permuteBoard(board, i);
+		count++;
 
 		//printf("%d: %s\n", PARENT_INDEX + i, getBits(BOARD(tree, parent, i), USABLE_BOARD));
 
@@ -263,3 +268,7 @@ void storeTree(const void* tree) {
 
 	fclose(treefile);
 }
+
+#ifdef __cplusplus
+} // namespace treeutils
+#endif

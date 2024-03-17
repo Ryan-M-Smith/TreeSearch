@@ -8,17 +8,16 @@
 #define SS_SEARCH_FACES_H
 
 #ifdef __cplusplus
-	#include "decl.h"
+extern "C" {
+#endif
 
-	enum class Faces: tile_t {
-		Sun = 0, Moon, Fish, Bird,
-		Horse, Boat, Seed, Tree
-	};
-#else
-	enum Faces {
-		Sun = 0, Moon, Fish, Bird,
-		Horse, Boat, Seed, Tree
-	};
+enum Faces {
+	Sun = 0, Moon, Fish, Bird,
+	Horse, Boat, Seed, Tree
+};
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif // SS_SEARCH_FACES_H
