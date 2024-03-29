@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "decl.h"
+#include "boardstates.h"
 
 #ifdef __cplusplus
 namespace treeutils {
@@ -30,6 +31,8 @@ void swapTiles(board_t* board, int tile1, int tile2);
 void flipTile(board_t* board, int tile);
 
 void storeTree(const void* tree);
+
+bool isValidBoardState(board_t board);
 
 /**
  * @brief Get a specific board from the tree

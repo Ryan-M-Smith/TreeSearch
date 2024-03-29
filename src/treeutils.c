@@ -4,6 +4,8 @@
 // CREATED: 2024-02-09 @ 10:38 PM
 //
 
+#include <math.h>
+
 #include "treeutils.h"
 
 #ifdef __cplusplus
@@ -23,9 +25,9 @@ namespace treeutils {
  * @return 					The fully generated tree for that intitial board state
  */
 tree_t buildTree(board_t initialBoard) {
-	// Create a tree
-	const int BYTES = MAX_BOARD_STATES * SIZEOF_BOARD / 8;
-	tree_t tree = malloc(BYTES);
+	const int TREE_NODES = (pow(CHILDREN_PER_PARENT, TREE_GEN_HEIGHT + 1) - 1) / (CHILDREN_PER_PARENT - 1); // The number of nodes in the tree
+	const size_t SIZEOF_TREE = TREE_NODES * SIZEOF_BOARD / 8; // The size of the tree in bytes
+	tree_t tree = malloc(SIZEOF_TREE); // Create a tree
 
 	BOARD(tree, 0, 0) = initialBoard; // Store the root node
 	//printf("Root: %s\n", getBits(initialBoard, 27));
@@ -63,7 +65,7 @@ void __buildTree(tree_t tree, board_t board, int height, int parent) {
 		//printf("Parent: %d | Height: %d | Count: %d\n", parent, height, count);
 		//printf("Allocating: %lu(%d) + %d = %lu\n", CHILDREN_PER_PARENT, parent, i, CHILDREN_PER_PARENT * parent + i);
 
-		// Store the next board permutation.
+		// Store the next board permutation
 		BOARD(tree, parent, i) = __permuteBoard(board, i);
 		count++;
 
@@ -267,6 +269,37 @@ void storeTree(const void* tree) {
 	}
 
 	fclose(treefile);
+}
+
+/**
+ * @brief Determine if a given board configuration is valid
+ * 
+ * @param 	board 	The board to check
+ * @return 			`true` if the board is valid, `false` otherwise
+ * 
+ * @note 			The board is found using binary search
+ */
+bool isValidBoardState(board_t board) {
+	int min = 0, max = MAX_BOARD_STATES - 1;
+	int mid = (min + max) / 2;
+
+	while (min <= max) {
+		printf("Min: %d\tMidpoint: %d\tMax: %d\tGuess: %d\n", min, mid, max, BOARD_STATES[mid]);
+
+		if (BOARD_STATES[mid] < board) {
+			min = mid + 1;
+		}
+		else if (BOARD_STATES[mid] > board) {
+			max = mid - 1;
+		}
+		else {
+			return true;
+		}
+		
+		mid = (min + max) / 2;
+	}
+
+	return false;
 }
 
 #ifdef __cplusplus
