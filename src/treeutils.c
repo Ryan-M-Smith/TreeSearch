@@ -5,6 +5,7 @@
 //
 
 #include <math.h>
+#include <assert.h>
 
 #include "treeutils.h"
 
@@ -29,8 +30,12 @@ tree_t buildTree(board_t initialBoard) {
 	const size_t SIZEOF_TREE = TREE_NODES * SIZEOF_BOARD / 8; // The size of the tree in bytes
 	tree_t tree = malloc(SIZEOF_TREE); // Create a tree
 
+	search_results results = isValidBoardState(initialBoard);
+	
+	// The root must be able to be allocated, otherwise generation cannot continue
+	assert(results.result && !used[results.index]);
+
 	BOARD(tree, 0, 0) = initialBoard; // Store the root node
-	//printf("Root: %s\n", getBits(initialBoard, 27));
 	
 	int height = 1; // The starting tree height
 	int parent = 0; // The index of the parent of the first recursively generated row
@@ -59,14 +64,18 @@ void __buildTree(tree_t tree, board_t board, int height, int parent) {
 		return;
 	}
 
-	//parent -= (parent == height);
-
 	for (int i = 1; i <= CHILDREN_PER_PARENT; i++) {
 		//printf("Parent: %d | Height: %d | Count: %d\n", parent, height, count);
 		//printf("Allocating: %lu(%d) + %d = %lu\n", CHILDREN_PER_PARENT, parent, i, CHILDREN_PER_PARENT * parent + i);
 
 		// Store the next board permutation
-		BOARD(tree, parent, i) = __permuteBoard(board, i);
+		
+		board_t nextBoard = __permuteBoard(board, i);
+
+		search_results results = isValidBoardState(nextBoard);
+
+		BOARD(tree, parent, i) = (results.result && !used[results.index])? nextBoard: 0;
+		used[results.index] = true;
 		count++;
 
 		//printf("%d: %s\n", PARENT_INDEX + i, getBits(BOARD(tree, parent, i), USABLE_BOARD));
@@ -269,37 +278,6 @@ void storeTree(const void* tree) {
 	}
 
 	fclose(treefile);
-}
-
-/**
- * @brief Determine if a given board configuration is valid
- * 
- * @param 	board 	The board to check
- * @return 			`true` if the board is valid, `false` otherwise
- * 
- * @note 			The board is found using binary search
- */
-bool isValidBoardState(board_t board) {
-	int min = 0, max = MAX_BOARD_STATES - 1;
-	int mid = (min + max) / 2;
-
-	while (min <= max) {
-		printf("Min: %d\tMidpoint: %d\tMax: %d\tGuess: %d\n", min, mid, max, BOARD_STATES[mid]);
-
-		if (BOARD_STATES[mid] < board) {
-			min = mid + 1;
-		}
-		else if (BOARD_STATES[mid] > board) {
-			max = mid - 1;
-		}
-		else {
-			return true;
-		}
-		
-		mid = (min + max) / 2;
-	}
-
-	return false;
 }
 
 #ifdef __cplusplus

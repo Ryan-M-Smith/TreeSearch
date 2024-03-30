@@ -7,9 +7,16 @@
 #ifndef SS_SEARCH_TREEUTILS_H
 #define SS_SEARCH_TREEUTILS_H
 
+#ifdef __cplusplus
+#include <tuple>
+#endif
+
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 #include <assert.h>
 #include <math.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +29,13 @@ namespace treeutils {
 extern "C" {
 #endif
 
+#ifndef __cplusplus
+	typedef struct __search_results {
+		bool result;
+		int  index;
+	} search_results;
+#endif
+
 tree_t buildTree(board_t initialBoard);
 
 void __buildTree(tree_t tree, board_t board, int height, int parent);
@@ -31,8 +45,6 @@ void swapTiles(board_t* board, int tile1, int tile2);
 void flipTile(board_t* board, int tile);
 
 void storeTree(const void* tree);
-
-bool isValidBoardState(board_t board);
 
 /**
  * @brief Get a specific board from the tree
@@ -82,6 +94,64 @@ const static char* const getBits(unsigned long value, size_t size) {
 
 	return buffer;
 }
+
+#ifdef __cplusplus
+	/**
+	 * @brief Determine if a given board configuration is valid
+	 * 
+	 * @param 	board 	The board to check
+	 * @return 			{`true`, index of `board`} if the board is valid, {`false`, `-1`} otherwise
+	 * 
+	 * @note 			The board is found using binary search
+	 */
+	extern "C++" std::tuple<bool, int> isValidBoardState(board_t board) {
+		int min = 0, max = MAX_BOARD_STATES - 1, mid;
+
+		while (min <= max) {
+			mid = (min + max) / 2;
+
+			if (BOARD_STATES[mid] < board) { 		// Guessed too low
+				min = mid + 1;
+			}
+			else if (BOARD_STATES[mid] > board) { 	// Guessed too high
+				max = mid - 1;
+			}
+			else {									// Guessed correctly
+				return std::make_tuple(true, mid);
+			}
+		}
+
+		return std::make_tuple(false, -1);
+	}
+#else
+	/**
+	 * @brief Determine if a given board configuration is valid
+	 * 
+	 * @param 	board 	The board to check
+	 * @return 			{`true`, index of `board`} if the board is valid, {`false`, `-1`} otherwise
+	 * 
+	 * @note 			The board is found using binary search
+	 */
+	search_results isValidBoardState(board_t board) {
+		int min = 0, max = MAX_BOARD_STATES - 1, mid;
+
+		while (min <= max) {
+			mid = (min + max) / 2;
+
+			if (BOARD_STATES[mid] < board) { 		// Guessed too low
+				min = mid + 1;
+			}
+			else if (BOARD_STATES[mid] > board) { 	// Guessed too high
+				max = mid - 1;
+			}
+			else {									// Guessed correctly
+				return (search_results){true, mid};
+			}
+		}
+
+		return (search_results){false, -1};
+	}
+#endif
 
 #ifdef __cplusplus
 } // namespace treeutils
