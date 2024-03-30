@@ -69,7 +69,7 @@ typedef void* tree_t;
  * 
  * @note  See https://grievous667.github.io/proofs/board-configs for calculations
  */
-#define MAX_BOARD_STATES 4288306UL
+#define MAX_BOARD_STATES 2580480UL
 
 /**
  * @brief The number of rows and columns in the board
