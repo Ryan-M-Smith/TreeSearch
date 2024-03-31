@@ -17,7 +17,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 # Set the compiler include path
 set(PROJ_INCLUDE_DIRS include/ submodules/boost/libs/graph/include/ submodules/boost/libs/property_map/include/ submodules/graphviz/lib/)
 
-set(SRC src/main.cpp src/treeutils.c)
+set(SRC src/main.cpp src/treeutils.c src/successstates.cpp)
 
 # Add submodules
 add_subdirectory(submodules/boost EXCLUDE_FROM_ALL)
