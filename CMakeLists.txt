@@ -17,7 +17,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 # Set the compiler include path
 set(PROJ_INCLUDE_DIRS include/ submodules/boost/libs/graph/include/ submodules/boost/libs/property_map/include/ submodules/graphviz/lib/)
 
-set(SRC src/main.cpp src/treeutils.c src/successstates.cpp)
+set(SRC src/main.cpp src/treeutils.cpp src/successstates.cpp)
 
 # Add submodules
 add_subdirectory(submodules/boost EXCLUDE_FROM_ALL)
@@ -32,7 +32,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJ_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Boost::graph cgraph gvc cdt)
 
 set(SHARED_LIB "treegen")
-add_library(${SHARED_LIB} SHARED include/treeutils.h src/treeutils.c include/decl.h include/faces.h include/treegraph.hpp)
+add_library(${SHARED_LIB} SHARED include/treeutils.hpp src/treeutils.cpp include/decl.h include/faces.h include/treegraph.hpp src/successstates.cpp include/successstates.hpp)
 target_include_directories(${SHARED_LIB} PUBLIC ${PROJ_INCLUDE_DIRS})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

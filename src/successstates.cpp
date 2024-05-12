@@ -9,6 +9,15 @@
 #include <iostream>
 
 namespace success_states {
+
+	/**
+	 * @brief 
+	 * 
+	 * @param board 
+	 * @param target 
+	 * @return true 
+	 * @return false 
+	 */
 	bool isSuccessState(board_t board, const std::string& target) {
 		std::vector<std::string> successStates;
 
@@ -19,33 +28,43 @@ namespace success_states {
 			return false;
 		}
 
-		bool match = false;
-		std::string boardID = getID(board); // The ID of the current board
-		const char PLACEHOLDERS[] = {'8', '9'};
-
 		for (const auto& state: successStates) {
-			if (match) {
+			if (matchesSuccessState(board, state)) {
 				return true;
-			}
-
-			match = true;
-
-			//
-			// Check if the board's ID number satisfies any of the success states for the target.
-			//
-			// The digits 8 and 9 are placeholders, and can be filled with any tile on the board.
-			// These values are ignored when comparing.
-			//
-			for (std::size_t i = 0; i < state.size(); i++) {
-				if (state[i] == PLACEHOLDERS[0] || state[i] == PLACEHOLDERS[1] || boardID[i] == state[i]) {
-					continue;
-				}
-
-				match = false;
-				break;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * @brief 
+	 * 
+	 * @param board 
+	 * @param state 
+	 * 
+	 * @return true 
+	 * @return false 
+	 */
+	bool matchesSuccessState(board_t board, const std::string& state) {
+		std::string boardID = getID(board); // The ID of the current board
+		const char PLACEHOLDERS[] = {'8', '9'};
+		bool match = true;
+		
+		//
+		// Check if the board's ID number satisfies any of the success states for the target.
+		//
+		// The digits 8 and 9 are placeholders, and can be filled with any tile on the board.
+		// These values are ignored when comparing.
+		//
+		for (std::size_t i = 0; i < state.size() && match; i++) {
+			if (state[i] == PLACEHOLDERS[0] || state[i] == PLACEHOLDERS[1] || boardID[i] == state[i]) {
+				continue;
+			}
+
+			match = false;
+		}
+
+		return match;
 	}
 }

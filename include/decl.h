@@ -8,6 +8,7 @@
 #define SS_SEARCH_DECL_H
 
 #include <stdint.h>
+#include <math.h>
 
 #if defined(__cplusplus) && defined(__USE_DECL_NAMESPACE)
 namespace decl {
@@ -89,7 +90,7 @@ typedef void* tree_t;
 /**
  * @brief The maximum height the tree is allowed to generate to
  */
-#define TREE_GEN_HEIGHT 2UL
+#define TREE_GEN_HEIGHT 6UL
 
 /**
  * @brief A function macro to get a usable board out of the tree buffer given a parent and child
@@ -112,6 +113,10 @@ typedef void* tree_t;
  * @param 	__index 	A memory offset to add to the tree pointer
  */
 #define BOARD_IDX(__tree, __index) *((board_t*)(__tree) + __index)
+
+#define TREE_NODES_COUNT(__children_per_parent, __tree_gen_height) ((unsigned)(pow(__children_per_parent, __tree_gen_height + 1) - 1) / (__children_per_parent - 1))
+
+#define TREE_LEAVES_COUNT(__children_per_parent, __tree_gen_height) TREE_NODES_COUNT(__children_per_parent, __tree_gen_height) - TREE_NODES_COUNT(__children_per_parent, __tree_gen_height - 1)
 
 #ifdef __cplusplus
 } // extern "C"

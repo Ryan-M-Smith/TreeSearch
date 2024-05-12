@@ -6,11 +6,13 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <chrono>
 #include <ctime>
 #include <functional>
 
 #include "faces.h"
-#include "treeutils.h"
+#include "treeutils.hpp"
+#include "successstates.hpp"
 #include "treegraph.hpp"
 
 board_t generateBoard() {
@@ -68,13 +70,38 @@ board_t generateBoard() {
 }
 
 int main() {
-	board_t board = generateBoard();
-	tree_t tree = treeutils::buildTree(board);
-	treeutils::storeTree(tree);
+	//std::cout << success_states::getID(0b101100111001101110010001100) << "\n";
 
-	TreeGraph<>* graph = new TreeGraph(tree);
-	graph->writeGVDOT("tree.gv");
+	board_t board = 0b100100101101011100100011000;//generateBoard();
+
+	auto start = std::chrono::high_resolution_clock::now();
+	//board_t targetBoard = treeutils::findSuccessState(board, "828878848");
+	// auto [result, index] = treeutils::isValidBoardState(board);
+	//auto [successState, moveSet] = treeutils::search()
+	tree_t tree = treeutils::buildTree(board);
+	std::cout << BOARD_IDX(tree, 13) << "\n";
+	auto end = std::chrono::high_resolution_clock::now();
+
+	auto duration = duration_cast<std::chrono::milliseconds>(end - start);
+	std::cout << "Generation completed in " << duration.count() << " ms\n";
+
+	//std::cout << success_states::isSuccessState(93731096, "548888888") << "\n";
+	//treeutils::storeTree(tree);
+
+	auto&& [successState, moveSet] = treeutils::search(tree, "548888888");
+	std::cout << treeutils::getBits(successState, 27) << "\n";
+
+	//std::cout << "Result: " << treeutils::getBits(targetBoard, 27) << "\n";
+
+	//auto [successState, moveSet] = treeutils::search(tree, "828878848");
+	//std::cout << successState << "\n";
+	//std::cout << "\nResult: " << successState << "\n";
+	
+	// //std::cout << "Generated a height " << TREE_GEN_HEIGHT << " tree in " << duration.count() << " ms\n";
+
+	// TreeGraph<>* graph = new TreeGraph(tree);
+	// graph->writeGVDOT("tree.gv");
 
 	free(tree);
-	delete graph;
+	// delete graph;
 }

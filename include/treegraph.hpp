@@ -21,7 +21,7 @@
 #include <cgraph/cgraph.h>
 
 #include "decl.h"
-#include "treeutils.h"
+#include "treeutils.hpp"
 
 /**
  * @brief Implementation details for the `TreeGraph` class

@@ -27,6 +27,7 @@ namespace success_states {
 	}
 	
 	bool isSuccessState(board_t board, const std::string& target);
+	bool matchesSuccessState(board_t board, const std::string& state);
 
 	const std::unordered_map<std::string, std::vector<std::string>> SUCCESS_STATES = {
 		{"888548888", {"888548888", "888854888", "548888888", "854888888", "888888548", "888888854"}},
